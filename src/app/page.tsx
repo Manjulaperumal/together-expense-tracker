@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 type Transaction = {
   id: string;
   type: "income" | "expense";
+  person?: "Husband" | "Wife";
   amount: number;
   category: string;
   date: string;
@@ -17,6 +18,7 @@ export default function Home() {
   const [loaded, setLoaded] = useState(false);
 
   const [type, setType] = useState<"income" | "expense">("income");
+  const [person, setPerson] = useState<"Husband" | "Wife">("Husband");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Salary");
   const [date, setDate] = useState("");
@@ -55,6 +57,25 @@ export default function Home() {
 
   const totalSavings = totalIncome - totalExpenses;
 
+  const husbandIncome = transactions
+  .filter((item) => item.person === "Husband" && item.type === "income")
+  .reduce((sum, item) => sum + item.amount, 0);
+
+const husbandExpenses = transactions
+  .filter((item) => item.person === "Husband" && item.type === "expense")
+  .reduce((sum, item) => sum + item.amount, 0);
+
+const wifeIncome = transactions
+  .filter((item) => item.person === "Wife" && item.type === "income")
+  .reduce((sum, item) => sum + item.amount, 0);
+
+const wifeExpenses = transactions
+  .filter((item) => item.person === "Wife" && item.type === "expense")
+  .reduce((sum, item) => sum + item.amount, 0);
+
+const husbandSavings = husbandIncome - husbandExpenses;
+const wifeSavings = wifeIncome - wifeExpenses;
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -64,16 +85,18 @@ export default function Home() {
     }
 
     const newTransaction: Transaction = {
-      id: crypto.randomUUID(),
-      type,
-      amount: Number(amount),
-      category,
-      date,
-      note,
-    };
+        id: crypto.randomUUID(),
+        type,
+        person,
+        amount: Number(amount),
+        category,
+        date,
+        note,
+      };
 
     setTransactions((previous) => [newTransaction, ...previous]);
     setAmount("");
+    setPerson("Husband");
     setNote("");
     alert("Transaction added successfully!");
   }
@@ -207,6 +230,71 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Husband and Wife Summary */}
+<section className="mb-9 grid grid-cols-1 gap-5 md:grid-cols-2">
+
+  {/* Husband */}
+  <div className="rounded-2xl border border-[#dcecdf] bg-white p-6 shadow-sm">
+    <div className="mb-5 flex items-center gap-3">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e2f2e5] text-2xl">
+        👨
+      </div>
+      <div>
+        <h3 className="text-xl font-bold text-[#315d40]">Husband</h3>
+        <p className="text-sm text-[#849387]">Personal summary</p>
+      </div>
+    </div>
+
+    <p className="text-sm text-[#748779]">Income</p>
+    <p className="mb-3 text-lg font-bold text-[#398052]">
+      {formatMoney(husbandIncome)}
+    </p>
+
+    <p className="text-sm text-[#748779]">Expenses</p>
+    <p className="mb-3 text-lg font-bold text-[#cf766b]">
+      {formatMoney(husbandExpenses)}
+    </p>
+
+    <div className="rounded-xl bg-[#edf5ed] p-3">
+      <p className="text-sm text-[#58765e]">Savings</p>
+      <p className="text-xl font-bold text-[#34754a]">
+        {formatMoney(husbandSavings)}
+      </p>
+    </div>
+  </div>
+
+  {/* Wife */}
+  <div className="rounded-2xl border border-[#dcecdf] bg-white p-6 shadow-sm">
+    <div className="mb-5 flex items-center gap-3">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e2f2e5] text-2xl">
+        👩
+      </div>
+      <div>
+        <h3 className="text-xl font-bold text-[#315d40]">Wife</h3>
+        <p className="text-sm text-[#849387]">Personal summary</p>
+      </div>
+    </div>
+
+    <p className="text-sm text-[#748779]">Income</p>
+    <p className="mb-3 text-lg font-bold text-[#398052]">
+      {formatMoney(wifeIncome)}
+    </p>
+
+    <p className="text-sm text-[#748779]">Expenses</p>
+    <p className="mb-3 text-lg font-bold text-[#cf766b]">
+      {formatMoney(wifeExpenses)}
+    </p>
+
+    <div className="rounded-xl bg-[#edf5ed] p-3">
+      <p className="text-sm text-[#58765e]">Savings</p>
+      <p className="text-xl font-bold text-[#34754a]">
+        {formatMoney(wifeSavings)}
+      </p>
+    </div>
+  </div>
+
+</section>
+
         {/* Add Transaction */}
         <section
           id="add-transaction"
@@ -223,6 +311,8 @@ export default function Home() {
               Record your income and expenses here.
             </p>
           </div>
+
+
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Transaction Type */}
@@ -262,6 +352,24 @@ export default function Home() {
                 </button>
               </div>
             </div>
+
+            {/* Select Person */}
+<div>
+  <label className="mb-2 block text-sm font-semibold text-[#526b58]">
+    Transaction Added By
+  </label>
+
+  <select
+    value={person}
+    onChange={(e) =>
+      setPerson(e.target.value as "Husband" | "Wife")
+    }
+    className="w-full rounded-xl border border-[#dce7dd] bg-[#fbfdfb] p-3 text-[#294b34] outline-none focus:border-[#6b9c76]"
+  >
+    <option value="Husband">Husband</option>
+    <option value="Wife">Wife</option>
+  </select>
+</div>
 
             {/* Amount and Category */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -393,8 +501,8 @@ export default function Home() {
                       <h4 className="font-semibold text-[#36543d]">
                         {item.category}
                       </h4>
-                      <p className="mt-1 text-xs text-[#89998c]">
-                        {item.date}
+                     <p className="mt-1 text-xs text-[#89998c]">
+                        {item.date} · {item.person || "Not assigned"}
                         {item.note ? ` · ${item.note}` : ""}
                       </p>
                     </div>
