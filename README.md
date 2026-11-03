@@ -1,3 +1,6 @@
+# together-expense-tracker
+Couples Shared Income and Expense Tracker
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
