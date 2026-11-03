@@ -22,11 +22,9 @@ export default function Home() {
   const [date, setDate] = useState("");
   const [note, setNote] = useState("");
 
-  // Load saved transactions
   useEffect(() => {
     try {
       const saved = localStorage.getItem("together-transactions");
-
       if (saved) {
         setTransactions(JSON.parse(saved));
       }
@@ -38,7 +36,6 @@ export default function Home() {
     setLoaded(true);
   }, []);
 
-  // Save transactions
   useEffect(() => {
     if (loaded) {
       localStorage.setItem(
@@ -48,7 +45,6 @@ export default function Home() {
     }
   }, [transactions, loaded]);
 
-  // Calculate totals
   const totalIncome = transactions
     .filter((item) => item.type === "income")
     .reduce((sum, item) => sum + item.amount, 0);
@@ -59,7 +55,6 @@ export default function Home() {
 
   const totalSavings = totalIncome - totalExpenses;
 
-  // Add transaction
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -77,17 +72,12 @@ export default function Home() {
       note,
     };
 
-    setTransactions((previous) => [
-      newTransaction,
-      ...previous,
-    ]);
-
+    setTransactions((previous) => [newTransaction, ...previous]);
     setAmount("");
     setNote("");
     alert("Transaction added successfully!");
   }
 
-  // Delete transaction
   function deleteTransaction(id: string) {
     if (confirm("Are you sure you want to delete this transaction?")) {
       setTransactions((previous) =>
@@ -119,86 +109,138 @@ export default function Home() {
         ];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div className="min-h-screen bg-[#f5f8f5] text-[#263b2d]">
+      {/* Top Navigation */}
+      <header className="sticky top-0 z-10 border-b border-[#e1ebe2] bg-white/95 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-4 sm:flex-row">
+          <a href="#overview" className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#dcecdf] text-2xl">
+              💚
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-[#315d40]">
+                Together
+              </h1>
+              <p className="text-xs text-[#819285]">
+                Our Expense Tracker
+              </p>
+            </div>
+          </a>
 
-      {/* Header */}
-      <header className="flex justify-between items-center mb-10">
-        <h1 className="text-2xl font-bold text-pink-700">
-          Together ❤️
-        </h1>
-        <p className="text-gray-600">Our Expense Tracker</p>
+          <nav className="flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-[#637668]">
+            <a href="#overview" className="transition hover:text-[#39764c]">
+              Overview
+            </a>
+            <a href="#add-transaction" className="transition hover:text-[#39764c]">
+              Add Transaction
+            </a>
+            <a href="#history" className="transition hover:text-[#39764c]">
+              Transactions
+            </a>
+          </nav>
+        </div>
       </header>
 
-      <main className="max-w-5xl mx-auto">
-
-        {/* Welcome */}
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">
-          Welcome to Together!
-        </h2>
-
-        <p className="text-gray-500 mb-8">
-          Manage your expenses and savings together.
-        </p>
+      <main className="mx-auto max-w-6xl px-5 py-9">
+        {/* Welcome Section */}
+        <section id="overview" className="mb-9">
+          <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-[#73917a]">
+            Your shared finances
+          </p>
+          <h2 className="text-3xl font-bold tracking-tight text-[#294b34] sm:text-4xl">
+            Welcome to Together! 🌿
+          </h2>
+          <p className="mt-3 text-[#7b8c7e]">
+            Plan your money, track your spending and grow your savings together.
+          </p>
+        </section>
 
         {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
-          <div className="bg-white p-6 rounded-xl shadow">
-            <p className="text-gray-500">Total Income</p>
-            <h3 className="text-2xl font-bold text-green-600">
+        <section className="mb-9 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="rounded-2xl border border-[#e2eee4] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+            <div className="mb-5 flex items-center justify-between">
+              <p className="font-medium text-[#748779]">Total Income</p>
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#e2f2e5] text-xl">
+                ↗
+              </span>
+            </div>
+            <h3 className="text-2xl font-bold text-[#398052]">
               {formatMoney(totalIncome)}
             </h3>
+            <p className="mt-2 text-xs text-[#91a294]">
+              Your total earnings
+            </p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow">
-            <p className="text-gray-500">Total Expenses</p>
-            <h3 className="text-2xl font-bold text-red-500">
+          <div className="rounded-2xl border border-[#e2eee4] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+            <div className="mb-5 flex items-center justify-between">
+              <p className="font-medium text-[#748779]">Total Expenses</p>
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#fcebea] text-xl">
+                ↙
+              </span>
+            </div>
+            <h3 className="text-2xl font-bold text-[#d46c62]">
               {formatMoney(totalExpenses)}
             </h3>
+            <p className="mt-2 text-xs text-[#91a294]">
+              Your total spending
+            </p>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow">
-            <p className="text-gray-500">Total Savings</p>
+          <div className="rounded-2xl border border-[#d8e9db] bg-[#e9f4e9] p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:col-span-2 lg:col-span-1">
+            <div className="mb-5 flex items-center justify-between">
+              <p className="font-medium text-[#58765e]">Total Savings</p>
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/80 text-xl">
+                🌱
+              </span>
+            </div>
             <h3
               className={`text-2xl font-bold ${
-                totalSavings >= 0
-                  ? "text-blue-600"
-                  : "text-red-500"
+                totalSavings >= 0 ? "text-[#34754a]" : "text-[#d46c62]"
               }`}
             >
               {formatMoney(totalSavings)}
             </h3>
+            <p className="mt-2 text-xs text-[#78927d]">
+              Income minus expenses
+            </p>
+          </div>
+        </section>
+
+        {/* Add Transaction */}
+        <section
+          id="add-transaction"
+          className="mb-9 scroll-mt-28 rounded-2xl border border-[#e2eee4] bg-white p-6 shadow-sm sm:p-8"
+        >
+          <div className="mb-7">
+            <p className="mb-1 text-sm font-semibold text-[#71917a]">
+              KEEP TRACK
+            </p>
+            <h3 className="text-2xl font-bold text-[#294b34]">
+              Add New Transaction
+            </h3>
+            <p className="mt-2 text-sm text-[#849387]">
+              Record your income and expenses here.
+            </p>
           </div>
 
-        </div>
-
-        {/* Add Transaction Form */}
-        <div className="bg-white rounded-xl shadow p-6 mb-8">
-
-          <h3 className="text-xl font-bold text-gray-800 mb-5">
-            Add New Transaction
-          </h3>
-
           <form onSubmit={handleSubmit} className="space-y-5">
-
             {/* Transaction Type */}
             <div>
-              <label className="block text-gray-700 font-medium mb-2">
+              <label className="mb-3 block text-sm font-semibold text-[#526b58]">
                 Transaction Type
               </label>
-
-              <div className="flex gap-3">
-
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => {
                     setType("income");
                     setCategory("Salary");
                   }}
-                  className={`flex-1 py-3 rounded-lg font-semibold ${
+                  className={`rounded-xl py-3 font-semibold transition ${
                     type === "income"
-                      ? "bg-green-600 text-white"
-                      : "bg-gray-100 text-gray-700"
+                      ? "bg-[#438357] text-white shadow-md"
+                      : "bg-[#f0f5f0] text-[#617866] hover:bg-[#e5efe6]"
                   }`}
                 >
                   + Income
@@ -210,167 +252,189 @@ export default function Home() {
                     setType("expense");
                     setCategory("Food");
                   }}
-                  className={`flex-1 py-3 rounded-lg font-semibold ${
+                  className={`rounded-xl py-3 font-semibold transition ${
                     type === "expense"
-                      ? "bg-red-500 text-white"
-                      : "bg-gray-100 text-gray-700"
+                      ? "bg-[#cf766b] text-white shadow-md"
+                      : "bg-[#f0f5f0] text-[#617866] hover:bg-[#e5efe6]"
                   }`}
                 >
-                  - Expense
+                  − Expense
                 </button>
-
               </div>
             </div>
 
-            
+            {/* Amount and Category */}
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[#526b58]">
+                  Amount (₹)
+                </label>
+                <input
+                  type="number"
+                  placeholder="Enter amount"
+                  min="0.01"
+                  step="0.01"
+                  required
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="w-full rounded-xl border border-[#dce7dd] bg-[#fbfdfb] p-3 text-[#294b34] outline-none transition focus:border-[#6b9c76] focus:ring-2 focus:ring-[#dcecdf]"
+                />
+              </div>
 
-            {/* Amount */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Amount (₹)
-              </label>
-
-              <input
-                type="number"
-                placeholder="Enter amount"
-                min="0.01"
-                step="0.01"
-                required
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-3 text-gray-800"
-              />
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[#526b58]">
+                  Category
+                </label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full rounded-xl border border-[#dce7dd] bg-[#fbfdfb] p-3 text-[#294b34] outline-none transition focus:border-[#6b9c76] focus:ring-2 focus:ring-[#dcecdf]"
+                >
+                  {categories.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            {/* Category */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Category
-              </label>
+            {/* Date and Note */}
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[#526b58]">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full rounded-xl border border-[#dce7dd] bg-[#fbfdfb] p-3 text-[#294b34] outline-none transition focus:border-[#6b9c76] focus:ring-2 focus:ring-[#dcecdf]"
+                />
+              </div>
 
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-3 text-gray-800"
-              >
-                {categories.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Date */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Date
-              </label>
-
-              <input
-                type="date"
-                required
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-3 text-gray-800"
-              />
-            </div>
-
-            {/* Note */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Note (Optional)
-              </label>
-
-              <input
-                type="text"
-                placeholder="Example: Monthly salary or Grocery shopping"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-3 text-gray-800"
-              />
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[#526b58]">
+                  Note (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Example: Grocery shopping"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className="w-full rounded-xl border border-[#dce7dd] bg-[#fbfdfb] p-3 text-[#294b34] outline-none transition focus:border-[#6b9c76] focus:ring-2 focus:ring-[#dcecdf]"
+                />
+              </div>
             </div>
 
             {/* Submit */}
             <button
               type="submit"
-              className={`w-full py-3 rounded-lg text-white font-bold ${
+              className={`w-full rounded-xl py-3.5 font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
                 type === "income"
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-red-500 hover:bg-red-600"
+                  ? "bg-[#438357] hover:bg-[#356f48]"
+                  : "bg-[#cf766b] hover:bg-[#bb6259]"
               }`}
             >
               Add {type === "income" ? "Income" : "Expense"}
             </button>
-
           </form>
-        </div>
+        </section>
 
         {/* Transaction History */}
-        <div className="bg-white rounded-xl shadow p-6">
-
-          <h3 className="text-xl font-bold text-gray-800 mb-5">
-            Recent Transactions
-          </h3>
+        <section
+          id="history"
+          className="scroll-mt-28 rounded-2xl border border-[#e2eee4] bg-white p-6 shadow-sm sm:p-8"
+        >
+          <div className="mb-7 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="mb-1 text-sm font-semibold text-[#71917a]">
+                YOUR RECORDS
+              </p>
+              <h3 className="text-2xl font-bold text-[#294b34]">
+                Recent Transactions
+              </h3>
+            </div>
+            <span className="rounded-full bg-[#edf5ed] px-4 py-2 text-sm font-semibold text-[#52775a]">
+              {transactions.length} Transactions
+            </span>
+          </div>
 
           {transactions.length === 0 ? (
-            <p className="text-gray-500">
-              No transactions yet. Start adding your income and expenses!
-            </p>
+            <div className="rounded-xl bg-[#f7faf7] px-5 py-12 text-center">
+              <div className="mb-3 text-4xl">🌿</div>
+              <p className="font-semibold text-[#526b58]">
+                No transactions yet
+              </p>
+              <p className="mt-2 text-sm text-[#89998c]">
+                Start adding your income and expenses!
+              </p>
+            </div>
           ) : (
-
-            <div className="space-y-4">
-
+            <div className="space-y-3">
               {transactions.map((item) => (
-
                 <div
                   key={item.id}
-                  className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 border-b border-gray-200 pb-4"
+                  className="flex flex-col gap-3 rounded-xl border border-[#edf2ed] bg-[#fcfdfc] p-4 transition hover:bg-[#f5f9f5] sm:flex-row sm:items-center sm:justify-between"
                 >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg ${
+                        item.type === "income"
+                          ? "bg-[#e2f2e5] text-[#398052]"
+                          : "bg-[#fcebea] text-[#cf766b]"
+                      }`}
+                    >
+                      {item.type === "income" ? "↗" : "↙"}
+                    </div>
 
-                  <div>
-                    <h4 className="font-semibold text-gray-800">
-                      {item.category}
-                    </h4>
-                    
-                    {item.note && (
-                      <p className="text-sm text-gray-500">
-                        {item.note}
+                    <div>
+                      <h4 className="font-semibold text-[#36543d]">
+                        {item.category}
+                      </h4>
+                      <p className="mt-1 text-xs text-[#89998c]">
+                        {item.date}
+                        {item.note ? ` · ${item.note}` : ""}
                       </p>
-                    )}
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-4">
-
+                  <div className="flex items-center justify-between gap-4 sm:justify-end">
                     <span
                       className={`font-bold ${
                         item.type === "income"
-                          ? "text-green-600"
-                          : "text-red-500"
+                          ? "text-[#398052]"
+                          : "text-[#cf766b]"
                       }`}
                     >
-                      {item.type === "income" ? "+" : "-"}
+                      {item.type === "income" ? "+" : "−"}
                       {formatMoney(item.amount)}
                     </span>
 
                     <button
+                      type="button"
                       onClick={() => deleteTransaction(item.id)}
-                      className="text-red-500 hover:text-red-700 text-sm"
+                      className="rounded-lg px-3 py-2 text-sm font-medium text-[#c66b62] transition hover:bg-[#fcebea]"
                     >
                       Delete
                     </button>
-
                   </div>
-
                 </div>
-
               ))}
-
             </div>
           )}
+        </section>
 
-        </div>
-
+        {/* Footer */}
+        <footer className="py-9 text-center">
+          <p className="text-sm font-medium text-[#66816c]">
+            Made with 💚 for a beautiful life together
+          </p>
+          <p className="mt-2 text-xs text-[#9aaa9d]">
+            Together Expense Tracker © 2026
+          </p>
+        </footer>
       </main>
     </div>
   );
